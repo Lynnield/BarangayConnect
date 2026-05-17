@@ -1,0 +1,77 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@layer base {
+    .dark body {
+        @apply bg-slate-950 text-slate-100;
+    }
+}
+
+/* Animations */
+@keyframes slide-in-from-top {
+    from { transform: translateY(-1rem); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-in {
+    animation-duration: 300ms;
+    animation-fill-mode: both;
+}
+
+.slide-in-from-top-4 {
+    animation-name: slide-in-from-top;
+}
+
+.fade-in {
+    animation-name: fade-in;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-out {
+    animation-name: fade-out;
+}
+
+@keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@media print {
+    header,
+    aside,
+    nav,
+    form,
+    button,
+    [data-print-hidden="true"] {
+        display: none !important;
+    }
+
+    body,
+    main {
+        background: #fff !important;
+        color: #0f172a !important;
+        overflow: visible !important;
+    }
+
+    main {
+        padding: 0 !important;
+    }
+
+    table {
+        page-break-inside: auto;
+        width: 100%;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+}

@@ -1,0 +1,111 @@
+/* Barangay Connect — layout */
+:root {
+    --sidebar-width: 270px;
+    --sidebar-bg: #0f1f3a;
+    --sidebar-text: #e8edf5;
+    --accent: #1a56db;
+    --topbar-h: 56px;
+}
+
+body { font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif; background: #f4f6f9; }
+
+.sidebar-body { margin: 0; min-height: 100vh; }
+
+.sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    z-index: 1030;
+    display: flex;
+    flex-direction: column;
+    transition: transform .2s ease;
+}
+
+.sidebar-header {
+    padding: 1rem 1rem 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.sidebar-brand { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit; }
+.sidebar-logo, .sidebar-logo-placeholder {
+    width: 42px; height: 42px; border-radius: 10px; object-fit: cover;
+    background: rgba(255,255,255,.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem;
+}
+.sidebar-brand-text .brand-name { font-weight: 700; display: block; line-height: 1.2; }
+.sidebar-brand-text .brand-sub { font-size: 0.75rem; opacity: 0.65; }
+
+.sidebar-user {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sidebar-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+.sidebar-user-name { font-weight: 600; font-size: 0.9rem; display: block; }
+.sidebar-user-role { font-size: 0.7rem; opacity: 0.7; }
+
+.nav-section-label {
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em;
+    opacity: 0.5; padding: 0.75rem 1rem 0.35rem;
+}
+.sidebar-nav .nav-link {
+    color: var(--sidebar-text);
+    padding: 0.55rem 1rem;
+    margin: 0.1rem 0.5rem;
+    border-radius: 8px;
+    display: flex; align-items: center; gap: 0.65rem;
+    text-decoration: none; font-size: 0.9rem;
+}
+.sidebar-nav .nav-link:hover { background: rgba(255,255,255,.06); color: #fff; }
+.sidebar-nav .nav-link.active { background: rgba(26, 86, 219, 0.35); color: #fff; }
+.sidebar-nav .nav-link i { font-size: 1.1rem; opacity: 0.9; }
+
+.sidebar-footer { margin-top: auto; padding: 1rem; border-top: 1px solid rgba(255,255,255,.08); }
+.sidebar-logout-btn {
+    width: 100%; color: var(--sidebar-text);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 8px; padding: 0.5rem;
+    background: transparent;
+}
+.sidebar-logout-btn:hover { background: rgba(255,255,255,.08); }
+
+.sidebar-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.4);
+    z-index: 1025; display: none;
+}
+@media (max-width: 991.98px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar-body.sidebar-open .sidebar { transform: translateX(0); }
+}
+
+.main-content {
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+@media (max-width: 991.98px) {
+    .main-content { margin-left: 0; }
+}
+
+.topbar {
+    height: var(--topbar-h);
+    background: #fff;
+    border-bottom: 1px solid #e9ecef;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 1rem;
+    position: sticky; top: 0; z-index: 1020;
+}
+.topbar-left, .topbar-right { display: flex; align-items: center; gap: 0.5rem; }
+.topbar-toggle { color: #333 !important; }
+
+.content-wrapper { padding: 1.25rem; flex: 1; max-width: 1400px; width: 100%; margin: 0 auto; }
+
+.fw-600 { font-weight: 600; }
+.hero-landing { background: linear-gradient(180deg, #f8fafc 0%, #fff 100%); }
+
+.table-card { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.06); overflow: hidden; }
+.page-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; }
