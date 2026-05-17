@@ -46,10 +46,7 @@
             <div class="py-12">
                 <i data-lucide="calendar-off" class="mx-auto h-12 w-12 text-slate-500"></i>
                 <h3 class="mt-5 text-xl font-black text-white">No appointments found</h3>
-                <p class="mt-3 text-sm text-slate-400">There are no scheduled appointments for this month. Create a new appointment to populate the calendar.</p>
-                <x-button href="{{ route('staff.appointments.create') }}" variant="primary" size="sm" icon="plus" class="mt-6">
-                    Create Appointment
-                </x-button>
+                <p class="mt-3 text-sm text-slate-400">There are no scheduled appointments for this month. Staff can review and manage existing appointments here.</p>
             </div>
         </x-card>
     @else

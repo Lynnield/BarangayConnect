@@ -50,12 +50,6 @@
 
     <!-- Right Side Actions -->
     <div class="flex items-center gap-4">
-        @if(\App\Models\SystemSetting::bool('dark_mode_available', true))
-            <button id="themeToggle" type="button" class="rounded-xl p-2.5 text-slate-500 hover:bg-slate-800 hover:text-white transition-all active:scale-95" title="Toggle light or dark mode">
-                <i data-lucide="sun-moon" class="h-5 w-5"></i>
-            </button>
-        @endif
-
         <!-- Notifications -->
         <div class="relative">
             <button id="notifBtn" 
@@ -219,12 +213,6 @@ function updateUnreadUi(count) {
     if (label) label.textContent = `${count} New`;
     if (dot) dot.classList.toggle('hidden', count < 1);
 }
-
-document.getElementById('themeToggle')?.addEventListener('click', () => {
-    const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-    document.documentElement.classList.toggle('dark', next === 'dark');
-    localStorage.setItem('theme', next);
-});
 
 setInterval(() => {
     fetch('{{ route('notifications.count') }}')

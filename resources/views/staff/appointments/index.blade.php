@@ -19,9 +19,6 @@
                 <x-button href="{{ route('staff.appointments.calendar') }}" variant="secondary" size="md" icon="calendar">
                     Calendar View
                 </x-button>
-                <x-button href="{{ route('staff.appointments.create') }}" variant="primary" size="md" icon="plus" class="shadow-indigo-600/20">
-                    New Appointment
-                </x-button>
             </div>
         </div>
     </x-card>
@@ -89,8 +86,8 @@
                                     <h3 class="text-lg font-black text-white">No Appointments Found</h3>
                                     <p class="text-sm text-slate-500 max-w-xs mx-auto mt-1 font-medium italic">There are no scheduled appointments to display.</p>
                                 </div>
-                                <x-button href="{{ route('staff.appointments.create') }}" variant="outline" size="sm" icon="plus">
-                                    Create Appointment
+                                <x-button href="{{ route('staff.appointments.calendar') }}" variant="outline" size="sm" icon="calendar">
+                                    View Calendar
                                 </x-button>
                             </div>
                         </td>

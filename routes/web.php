@@ -94,7 +94,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::get('appointments/calendar', [Admin\AppointmentController::class, 'calendar'])->name('appointments.calendar');
     Route::get('appointments/slots', [Admin\AppointmentController::class, 'slots'])->name('appointments.slots');
     Route::post('appointments/slots', [Admin\AppointmentController::class, 'storeSlot'])->name('appointments.slots.store');
-    Route::resource('appointments', Admin\AppointmentController::class);
+    Route::get('appointments/slots/{slot}/edit', [Admin\AppointmentController::class, 'editSlot'])->name('appointments.slots.edit');
+    Route::put('appointments/slots/{slot}', [Admin\AppointmentController::class, 'updateSlot'])->name('appointments.slots.update');
+    Route::delete('appointments/slots/{slot}', [Admin\AppointmentController::class, 'destroySlot'])->name('appointments.slots.destroy');
+    Route::resource('appointments', Admin\AppointmentController::class)->except(['create', 'store', 'edit', 'update', 'destroy']);
 
     // Reports
     Route::get('reports', [Admin\ReportController::class, 'index'])->name('reports.index');
@@ -136,7 +139,7 @@ Route::prefix('staff')->name('staff.')->middleware(['auth', 'role:staff,admin'])
     // Appointments
     Route::get('appointments/calendar', [Staff\AppointmentController::class, 'calendar'])->name('appointments.calendar');
     Route::post('appointments/{appointment}/confirm', [Staff\AppointmentController::class, 'confirm'])->name('appointments.confirm');
-    Route::resource('appointments', Staff\AppointmentController::class);
+    Route::resource('appointments', Staff\AppointmentController::class)->only(['index', 'show', 'destroy']);
 
     // Residents
     Route::post('residents/{resident}/verify', [Staff\ResidentController::class, 'approveVerification'])->name('residents.verify');

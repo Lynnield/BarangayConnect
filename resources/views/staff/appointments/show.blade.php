@@ -100,10 +100,6 @@
                         </form>
                     @endif
 
-                    <x-button href="{{ route('staff.appointments.edit', $appointment) }}" variant="secondary" size="lg" icon="edit-3" class="w-full">
-                        Modify Schedule
-                    </x-button>
-
                     @if($appointment->status !== 'cancelled' && $appointment->status !== 'completed')
                         <form method="POST" action="{{ route('staff.appointments.cancel', $appointment) }}" onsubmit="return confirm('Cancel this appointment?')">
                             @csrf

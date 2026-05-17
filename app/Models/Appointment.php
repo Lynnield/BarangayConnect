@@ -11,7 +11,7 @@ class Appointment extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'appointment_number', 'document_request_id', 'resident_id',
+        'appointment_number', 'document_request_id', 'resident_id', 'schedule_id',
         'appointment_date', 'appointment_time', 'status', 'notes',
         'managed_by', 'reminder_sent_at',
     ];
@@ -34,6 +34,11 @@ class Appointment extends Model
     public function managedBy()
     {
         return $this->belongsTo(User::class, 'managed_by');
+    }
+
+    public function schedule()
+    {
+        return $this->belongsTo(AppointmentSlot::class, 'schedule_id');
     }
 
     public function getStatusBadgeAttribute(): string

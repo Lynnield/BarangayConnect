@@ -29,23 +29,46 @@ class BackupService
         ]);
 
         try {
-            Storage::disk('local')->makeDirectory('backups');
+            // Ensure backups directory exists with proper permissions
+            $backupDir = storage_path('app/backups');
+            if (!File::isDirectory($backupDir)) {
+                File::makeDirectory($backupDir, 0755, true);
+                @chmod($backupDir, 0755);
+            }
+
             $relative = 'backups/' . $name;
 
             if ($driver === 'sqlite') {
                 $dbPath = database_path('database.sqlite');
                 if (! File::exists($dbPath)) {
-                    throw new \RuntimeException('SQLite database file not found.');
+                    throw new \RuntimeException('SQLite database file not found at: ' . $dbPath);
                 }
                 $target = storage_path('app/' . $relative . '.sqlite');
-                File::copy($dbPath, $target);
+                
+                // Use native copy with better error handling
+                if (!copy($dbPath, $target)) {
+                    throw new \RuntimeException('Failed to copy database file. Check disk space and permissions.');
+                }
+
+                // Verify file was created
+                if (!File::exists($target)) {
+                    throw new \RuntimeException('Database backup file was not created.');
+                }
+                
+                @chmod($target, 0644);
                 $size = filesize($target);
+                if ($size === false || $size < 1) {
+                    throw new \RuntimeException('Database backup file is empty or invalid.');
+                }
                 $path = $relative . '.sqlite';
             } elseif ($driver === 'mysql') {
                 $path = $relative . '.sql';
                 $full = storage_path('app/' . $path);
                 $this->dumpMysql($full);
                 $size = filesize($full);
+                if ($size === false || $size < 1) {
+                    throw new \RuntimeException('MySQL dump resulted in empty file.');
+                }
             } else {
                 throw new \RuntimeException('Unsupported DB driver for backup: ' . $driver);
             }
@@ -85,7 +108,13 @@ class BackupService
         ]);
 
         try {
-            Storage::disk('local')->makeDirectory('backups');
+            // Ensure backups directory exists with proper permissions
+            $backupDir = storage_path('app/backups');
+            if (!File::isDirectory($backupDir)) {
+                File::makeDirectory($backupDir, 0755, true);
+                @chmod($backupDir, 0755);
+            }
+
             $relative = 'backups/' . $name . '.zip';
             $zipPath = storage_path('app/' . $relative);
             $sourcePath = storage_path('app/public');
@@ -95,8 +124,9 @@ class BackupService
             }
 
             $zip = new \ZipArchive();
-            if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
-                throw new \RuntimeException('Could not create zip file.');
+            $openResult = $zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+            if ($openResult !== true) {
+                throw new \RuntimeException('Could not create zip file. Error code: ' . $openResult);
             }
 
             $files = new \RecursiveIteratorIterator(
@@ -104,19 +134,36 @@ class BackupService
                 \RecursiveIteratorIterator::LEAVES_ONLY
             );
 
+            $fileCount = 0;
             foreach ($files as $name => $file) {
                 if (!$file->isDir()) {
                     $filePath = $file->getRealPath();
                     $relativePath = substr($filePath, strlen($sourcePath) + 1);
-                    $zip->addFile($filePath, $relativePath);
+                    if (!$zip->addFile($filePath, $relativePath)) {
+                        \Log::warning("Failed to add file to zip: {$filePath}");
+                    } else {
+                        $fileCount++;
+                    }
                 }
             }
 
             $zip->close();
 
+            // Verify zip was created and has content
+            if (!File::exists($zipPath)) {
+                throw new \RuntimeException('Backup zip file was not created.');
+            }
+            
+            $size = filesize($zipPath);
+            if ($size === false || $size < 100) {
+                throw new \RuntimeException("Backup zip file is invalid or empty ({$size} bytes). Files archived: {$fileCount}");
+            }
+
+            @chmod($zipPath, 0644);
+
             $backup->update([
                 'file_path' => $relative,
-                'file_size' => filesize($zipPath),
+                'file_size' => $size,
                 'status' => 'completed',
                 'completed_at' => now(),
             ]);
@@ -163,22 +210,41 @@ class BackupService
         $username = Config::get('database.connections.mysql.username');
         $password = Config::get('database.connections.mysql.password');
         $host = Config::get('database.connections.mysql.host', '127.0.0.1');
+        $port = Config::get('database.connections.mysql.port', 3306);
 
+        // Check if mysqldump is available
         $mysqldump = 'mysqldump';
+        exec('where ' . $mysqldump . ' 2>/dev/null', $output, $code);
+        if ($code !== 0 && PHP_OS_FAMILY !== 'Windows') {
+            // Try common install paths on Unix
+            foreach (['/usr/bin/mysqldump', '/usr/local/bin/mysqldump'] as $path) {
+                if (file_exists($path)) {
+                    $mysqldump = $path;
+                    break;
+                }
+            }
+        }
+
+        // Build mysqldump command
         $cmd = sprintf(
-            '%s --user=%s --password=%s --host=%s %s > %s',
+            '%s --user=%s --password=%s --host=%s --port=%d %s > %s 2>&1',
             escapeshellcmd($mysqldump),
             escapeshellarg($username),
             escapeshellarg((string) $password),
             escapeshellarg($host),
+            (int)$port,
             escapeshellarg($database),
             escapeshellarg($targetPath)
         );
 
         $code = 0;
-        passthru($cmd, $code);
-        if ($code !== 0 || ! is_file($targetPath) || filesize($targetPath) < 10) {
-            throw new \RuntimeException('mysqldump failed. Ensure MySQL client tools are installed.');
+        $output = '';
+        exec($cmd, $output, $code);
+        
+        if ($code !== 0 || ! is_file($targetPath) || filesize($targetPath) < 100) {
+            $errorMsg = implode("\n", $output);
+            \Log::error('MySQL dump failed. Command: ' . $cmd . "\nOutput: " . $errorMsg);
+            throw new \RuntimeException('MySQL dump failed. Ensure MySQL client tools are installed and database credentials are correct. Error: ' . substr($errorMsg, 0, 200));
         }
     }
 

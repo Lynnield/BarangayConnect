@@ -1,33 +1,181 @@
 @extends('layouts.app')
 @section('title','Book appointment')
 @section('content')
-<h1 class="h4 mb-3">Pick a slot</h1>
-@if(isset($documentRequest))
-<p class="small text-muted">For request <strong>{{ $documentRequest->request_number }}</strong></p>
-@endif
-<form id="apptform" method="POST" action="{{ route('resident.appointments.store') }}" class="card border-0 shadow-sm p-4">@csrf
-@if(isset($documentRequest))<input type="hidden" name="document_request_id" value="{{ $documentRequest->id }}">@endif
-    <div class="mb-3"><label class="form-label">Date</label><input type="date" name="slot_date" id="slotDate" class="form-control" min="{{ today()->format('Y-m-d') }}" required></div>
-    <div class="mb-3"><label class="form-label">Time</label><select name="slot_time" id="slotTime" class="form-select" required><option value="">Choose date first</option></select></div>
-    <button class="btn btn-primary">Confirm</button>
-</form>
+<div class="space-y-8 animate-in fade-in duration-700">
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+            <p class="text-sm uppercase tracking-[0.28em] font-black text-slate-500">Appointment Booking</p>
+            <h1 class="mt-2 text-3xl font-black text-white tracking-tight">Book your appointment</h1>
+            <p class="mt-3 max-w-2xl text-sm text-slate-400">Choose from admin-created dates and times only. Your selected slot is pulled from the available schedule, not entered manually.</p>
+        </div>
+        <x-button href="{{ route('resident.appointments.index') }}" variant="secondary" size="md" icon="chevrons-left">
+            My Appointments
+        </x-button>
+    </div>
+
+    <div class="grid gap-6 xl:grid-cols-[1.5fr_0.9fr]">
+        <x-card class="space-y-6">
+            <div class="space-y-2">
+                <h2 class="text-xl font-black text-white">Pick a slot</h2>
+                <p class="text-sm text-slate-400">Select a date to display only the available booking times for that day.</p>
+            </div>
+
+            @if(session('message'))
+                <div class="rounded-3xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-200">
+                    {{ session('message') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="rounded-3xl border border-rose-500/20 bg-rose-500/5 px-4 py-3 text-sm text-rose-200">
+                    <ul class="list-disc list-inside space-y-1">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            @if(isset($documentRequest))
+                <div class="rounded-3xl border border-slate-700 bg-slate-950/80 p-4">
+                    <p class="text-sm font-semibold text-slate-300">Booking for request</p>
+                    <p class="mt-1 text-base font-black text-white">{{ $documentRequest->request_number }}</p>
+                </div>
+            @endif
+
+            <form id="apptform" method="POST" action="{{ route('resident.appointments.store') }}" class="space-y-6">
+                @csrf
+                @if(isset($documentRequest))
+                    <input type="hidden" name="document_request_id" value="{{ $documentRequest->id }}">
+                @endif
+
+                <div class="grid gap-6 md:grid-cols-2">
+                    <label class="block">
+                        <span class="text-sm font-semibold text-slate-300">Available date</span>
+                        <select
+                            name="slot_date"
+                            id="slotDate"
+                            required
+                            class="mt-3 w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                        >
+                            @if($availableDates->isEmpty())
+                                <option value="">No available dates</option>
+                            @else
+                                <option value="">Select a date</option>
+                                @foreach($availableDates as $date)
+                                    <option value="{{ $date }}" @selected(old('slot_date', $defaultDate) === $date)>{{ \Carbon\Carbon::parse($date)->format('M d, Y') }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </label>
+
+                    <label class="block">
+                        <span class="text-sm font-semibold text-slate-300">Available time</span>
+                        <select
+                            name="schedule_id"
+                            id="slotTime"
+                            required
+                            class="mt-3 w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                        >
+                            <option value="">Choose a date first</option>
+                            @foreach($availableTimes ?? [] as $time)
+                                <option value="{{ $time['id'] }}" @selected(old('schedule_id') == $time['id'])>{{ \Carbon\createFromFormat('H:i', $time['time'])->format('g:i A') }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+                </div>
+
+                @if(isset($defaultDate) && $defaultDate !== today()->format('Y-m-d'))
+                    <div class="rounded-3xl border border-slate-700 bg-slate-950/80 p-4 text-sm text-slate-400">
+                        <p class="font-semibold text-slate-200">Showing earliest available date</p>
+                        <p class="mt-1">The next open booking date is {{ \Carbon\Carbon::parse($defaultDate)->format('M d, Y') }}. You can change the date if you want another day.</p>
+                    </div>
+                @else
+                    <div class="rounded-3xl border border-slate-700 bg-slate-950/80 p-4 text-sm text-slate-400">
+                        <p class="font-semibold text-slate-200">Tip</p>
+                        <p class="mt-1">If no slots are shown after picking a date, please select another day. The system only shows times that are still available.</p>
+                    </div>
+                @endif
+
+                <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-8 py-4 text-base font-black uppercase tracking-widest text-white transition-all duration-300 hover:bg-indigo-500 hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 disabled:pointer-events-none" {{ $availableDates->isEmpty() ? 'disabled' : '' }}>
+                        Confirm appointment
+                    </button>
+                    <p class="text-xs uppercase tracking-[0.28em] text-slate-500">Available times refresh immediately</p>
+                </div>
+            </form>
+        </x-card>
+
+        <x-card class="rounded-3xl border border-slate-800 bg-slate-950 shadow-2xl">
+            <div class="space-y-6 p-6">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-sm uppercase tracking-[0.28em] font-black text-slate-500">Need help?</p>
+                        <h3 class="mt-2 text-xl font-black text-white">How bookings work</h3>
+                    </div>
+                    <div class="flex h-12 w-12 items-center justify-center rounded-3xl bg-indigo-500/10 text-indigo-300">
+                        <i data-lucide="calendar" class="h-6 w-6"></i>
+                    </div>
+                </div>
+
+                <div class="space-y-4 text-sm text-slate-400">
+                    <p><span class="font-semibold text-slate-200">Step 1:</span> Choose an available date created by admin.</p>
+                    <p><span class="font-semibold text-slate-200">Step 2:</span> Select one of the available time slots.</p>
+                    <p><span class="font-semibold text-slate-200">Step 3:</span> Submit the appointment and review it in your dashboard.</p>
+                </div>
+
+                <div class="rounded-3xl border border-slate-700 bg-slate-900/80 p-4 text-sm text-slate-400">
+                    <p class="font-semibold text-slate-200">Need assistance?</p>
+                    <p class="mt-2">Visit the barangay office or contact the support team if you can’t find a suitable slot.</p>
+                </div>
+            </div>
+        </x-card>
+    </div>
+</div>
+@endsection
+
 @push('scripts')
 <script>
-document.getElementById('slotDate')?.addEventListener('change', function() {
-    const sel = document.getElementById('slotTime');
-    sel.innerHTML = '<option>Loading…</option>';
-    fetch(`{{ route('resident.appointment-slots') }}?date=${this.value}`)
-        .then(r => r.json()).then(rows => {
-            sel.innerHTML = '<option value="">Select time</option>';
+const slotDate = document.getElementById('slotDate');
+const slotTime = document.getElementById('slotTime');
+
+const loadAvailableTimes = (selectedDate) => {
+    slotTime.innerHTML = '<option>Loading…</option>';
+
+    fetch(`{{ route('resident.appointment-slots') }}?date=${selectedDate}`)
+        .then(response => response.json())
+        .then(rows => {
+            slotTime.innerHTML = '<option value="">Select a time</option>';
+            if (!rows.length) {
+                slotTime.innerHTML = '<option value="">No slots available for this date</option>';
+                return;
+            }
+
+            let addedOptionCount = 0;
             rows.forEach(row => {
                 if (!row.available) return;
-                const o = document.createElement('option');
-                o.value = row.time;
-                o.textContent = row.time;
-                sel.appendChild(o);
+                const option = document.createElement('option');
+                option.value = row.id;
+                option.textContent = row.time;
+                slotTime.appendChild(option);
+                addedOptionCount += 1;
             });
+
+            if (addedOptionCount === 0) {
+                slotTime.innerHTML = '<option value="">No available times</option>';
+            }
+        })
+        .catch(() => {
+            slotTime.innerHTML = '<option value="">Unable to load slots</option>';
         });
+};
+
+slotDate?.addEventListener('change', function() {
+    loadAvailableTimes(this.value);
 });
+
+if (slotDate?.value) {
+    loadAvailableTimes(slotDate.value);
+}
 </script>
 @endpush
-@endsection

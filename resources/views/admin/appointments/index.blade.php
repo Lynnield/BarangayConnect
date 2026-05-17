@@ -19,11 +19,8 @@
                 <x-button href="{{ route('admin.appointments.calendar') }}" variant="secondary" size="md" icon="calendar">
                     Calendar View
                 </x-button>
-                <x-button href="{{ route('admin.appointments.slots') }}" variant="secondary" size="md" icon="clock">
-                    Manage Slots
-                </x-button>
-                <x-button href="{{ route('admin.appointments.create') }}" variant="primary" size="md" icon="plus" class="shadow-indigo-600/20">
-                    New Appointment
+                <x-button href="{{ route('admin.appointments.slots') }}" variant="primary" size="md" icon="clock" class="shadow-indigo-600/20">
+                    Manage Schedules
                 </x-button>
             </div>
         </div>

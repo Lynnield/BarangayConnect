@@ -11,21 +11,7 @@ class AppointmentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Appointment::with(['resident', 'documentRequest']);
-
-        if ($request->filled('date_from')) {
-            $query->whereDate('appointment_date', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $query->whereDate('appointment_date', '<=', $request->date_to);
-        }
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        $appointments = $query->orderBy('appointment_date')->orderBy('appointment_time')->paginate(25)->withQueryString();
-
-        return view('admin.appointments.index', compact('appointments'));
+        return redirect()->route('admin.appointments.slots');
     }
 
     public function create()
@@ -116,6 +102,37 @@ class AppointmentController extends Controller
         );
 
         return back()->with('success', 'Slot saved.');
+    }
+
+    public function editSlot(AppointmentSlot $slot)
+    {
+        return view('admin.appointments.slots-edit', compact('slot'));
+    }
+
+    public function updateSlot(Request $request, AppointmentSlot $slot)
+    {
+        $request->validate([
+            'slot_date' => 'required|date',
+            'slot_time' => 'required|date_format:H:i',
+            'max_appointments' => 'required|integer|min:1|max:50',
+            'is_available' => 'required|boolean',
+        ]);
+
+        $slot->update([
+            'slot_date' => $request->slot_date,
+            'slot_time' => $request->slot_time,
+            'max_appointments' => $request->max_appointments,
+            'is_available' => $request->is_available,
+        ]);
+
+        return redirect()->route('admin.appointments.slots')->with('success', 'Schedule updated.');
+    }
+
+    public function destroySlot(AppointmentSlot $slot)
+    {
+        $slot->delete();
+
+        return back()->with('success', 'Schedule removed.');
     }
 
     private function validated(Request $request): array
