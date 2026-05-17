@@ -32,9 +32,15 @@
         $notifications = $notifications->sortByDesc('created_at');
     @endphp
     <div class="flex items-center gap-4">
-        <button id="sidebarToggle" class="lg:hidden p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition-colors">
+        <button id="sidebarToggle" class="lg:hidden p-2.5 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-400 hover:text-white transition-colors duration-200 active:scale-95" title="Open menu">
             <i data-lucide="menu" class="h-5 w-5"></i>
         </button>
+
+        <div class="lg:hidden flex items-center gap-2 flex-shrink-0">
+            <x-barangay-logo size="sm" class="ring-1 ring-slate-700" />
+            <span class="text-xs font-black text-white hidden sm:block">{{ explode(' ', \App\Models\SystemSetting::get('barangay_name', 'Barangay Connect'))[0] }}</span>
+        </div>
+
         <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em]">
             <span class="text-slate-500">System</span>
             <i data-lucide="chevron-right" class="h-3 w-3 text-slate-700"></i>

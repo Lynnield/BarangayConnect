@@ -1,14 +1,18 @@
 <aside id="sidebar" class="w-64 flex-shrink-0 bg-slate-950 border-r border-slate-800 flex flex-col justify-between p-4 transition-transform duration-300 lg:translate-x-0 -translate-x-full fixed lg:static inset-y-0 left-0 z-50 h-full">
     <div class="flex flex-col h-full space-y-8">
-        <!-- Brand Logo -->
-        <div class="flex items-center gap-3 px-2 shrink-0">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-900/40">
-                <i data-lucide="building-2" class="h-6 w-6"></i>
+        <!-- Brand Logo & Mobile Close Button -->
+        <div class="flex items-center justify-between px-2 shrink-0">
+            <div class="flex items-center gap-3">
+                <x-barangay-logo size="lg" class="shadow-lg shadow-indigo-900/40" />
+                <div class="flex flex-col">
+                    <span class="text-sm font-black text-white tracking-tight leading-none text-lg">{{ \App\Models\SystemSetting::get('barangay_name', 'San Jose') }}</span>
+                    <span class="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] mt-1">Connect</span>
+                </div>
             </div>
-            <div class="flex flex-col">
-                <span class="text-sm font-black text-white tracking-tight leading-none text-lg">San Jose</span>
-                <span class="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] mt-1">Connect</span>
-            </div>
+            <!-- Mobile Close Button -->
+            <button id="sidebarClose" class="lg:hidden p-2.5 rounded-lg bg-slate-800 hover:bg-rose-600 text-slate-400 hover:text-white transition-colors duration-200 active:scale-95" title="Close menu">
+                <i data-lucide="x" class="h-5 w-5"></i>
+            </button>
         </div>
 
         <!-- Navigation -->
@@ -34,6 +38,3 @@
         </div>
     </div>
 </aside>
-
-<!-- Mobile Overlay -->
-<div id="sidebarOverlay" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden hidden"></div>

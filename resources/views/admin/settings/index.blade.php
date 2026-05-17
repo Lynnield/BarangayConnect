@@ -89,20 +89,37 @@
         <!-- Branding & Assets -->
         <div class="lg:col-span-1 space-y-8">
             <x-card title="Platform Branding" icon="palette" class="bg-slate-900/50 border-slate-800">
+                @php
+                    $logoPath = \App\Models\SystemSetting::get('logo_path');
+                @endphp
+
+                @if($logoPath && Storage::disk('public')->exists($logoPath))
+                    <!-- Current Logo Preview -->
+                    <div class="space-y-4 mb-6">
+                        <div class="text-xs font-black text-slate-400 uppercase tracking-widest">Current Logo</div>
+                        <div class="h-32 w-full rounded-2xl bg-slate-950 border border-slate-700 flex items-center justify-center p-4 overflow-hidden">
+                            <img src="{{ asset('storage/' . $logoPath) }}" alt="Current Logo" class="max-h-32 max-w-full object-contain">
+                        </div>
+                        <p class="text-[10px] text-slate-500 font-medium italic">Uploaded: {{ \Carbon\Carbon::parse($logoPath)->diffForHumans() }}</p>
+                    </div>
+                    <hr class="border-slate-800 my-6">
+                    <div class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Upload New Logo</div>
+                @endif
+
                 <form method="POST" action="{{ route('admin.settings.logo') }}" enctype="multipart/form-data" class="space-y-6">
                     @csrf
                     <div class="space-y-4">
-                        <div class="h-32 w-full rounded-2xl bg-slate-800/50 border border-slate-700 border-dashed flex flex-col items-center justify-center text-slate-500 group relative overflow-hidden">
-                            <i data-lucide="image-plus" class="h-8 w-8 mb-2"></i>
-                            <span class="text-[10px] font-black uppercase tracking-widest">Logo Upload</span>
+                        <div class="h-32 w-full rounded-2xl bg-slate-800/50 border border-slate-700 border-dashed flex flex-col items-center justify-center text-slate-500 group relative overflow-hidden hover:border-indigo-500/50 hover:bg-slate-800/70 transition-colors">
+                            <i data-lucide="image-plus" class="h-8 w-8 mb-2 group-hover:text-indigo-500 transition-colors"></i>
+                            <span class="text-[10px] font-black uppercase tracking-widest">Click to upload or drag and drop</span>
                             <input type="file" name="logo" accept="image/*" required
                                 class="absolute inset-0 opacity-0 cursor-pointer">
                         </div>
-                        <p class="text-[10px] text-slate-500 font-medium italic text-center">Recommended: PNG or SVG with transparent background.</p>
+                        <p class="text-[10px] text-slate-500 font-medium italic text-center">Recommended: PNG, SVG, or WebP with transparent background. Max 2MB.</p>
                     </div>
 
                     <x-button type="submit" variant="secondary" size="sm" icon="upload" class="w-full">
-                        Upload Asset
+                        {{ $logoPath ? 'Update Logo' : 'Upload Logo' }}
                     </x-button>
                 </form>
             </x-card>

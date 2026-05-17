@@ -2,6 +2,9 @@
 @section('title', 'Sign In')
 @section('content')
 <div class="text-center mb-10 animate-in fade-in slide-in-from-top-6 duration-700">
+    <div class="mx-auto mb-8 w-max">
+        <x-barangay-logo size="2xl" class="mx-auto" />
+    </div>
     <h1 class="text-4xl font-black text-white tracking-tight">Welcome Back</h1>
     <p class="text-slate-500 mt-3 font-medium text-lg italic">"Connecting San Jose, one citizen at a time."</p>
 </div>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="95" fill="#4F46E5" stroke="#312E81" stroke-width="2"/>
+  
+  <!-- Building Shape -->
+  <g transform="translate(100, 100)">
+    <!-- Main building structure -->
+    <rect x="-35" y="-20" width="70" height="60" fill="#FFFFFF" rx="4"/>
+    
+    <!-- Roof -->
+    <polygon points="-40,-20 0,-55 40,-20" fill="#F59E0B"/>
+    
+    <!-- Door -->
+    <rect x="-10" y="25" width="20" height="35" fill="#1F2937" rx="2"/>
+    <circle cx="-2" cy="42" r="2" fill="#FBBF24"/>
+    
+    <!-- Windows - Left column -->
+    <rect x="-28" y="-8" width="12" height="12" fill="#93C5FD" rx="1"/>
+    <rect x="-28" y="8" width="12" height="12" fill="#93C5FD" rx="1"/>
+    <rect x="-28" y="24" width="12" height="12" fill="#93C5FD" rx="1"/>
+    
+    <!-- Windows - Right column -->
+    <rect x="16" y="-8" width="12" height="12" fill="#93C5FD" rx="1"/>
+    <rect x="16" y="8" width="12" height="12" fill="#93C5FD" rx="1"/>
+    <rect x="16" y="24" width="12" height="12" fill="#93C5FD" rx="1"/>
+    
+    <!-- Door frame detail -->
+    <line x1="-10" y1="42" x2="10" y2="42" stroke="#FBBF24" stroke-width="1"/>
+  </g>
+  
+  <!-- Text Circle Background -->
+  <circle cx="100" cy="165" r="28" fill="#1F2937"/>
+  
+  <!-- Text -->
+  <text x="100" y="170" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">BARANGAY</text>
+</svg>

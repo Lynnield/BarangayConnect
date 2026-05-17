@@ -5,7 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Login') — {{ \App\Models\SystemSetting::get('barangay_name', 'Barangay Connect') }}</title>
-
+    <!-- Favicon -->
+    @php
+        $logoPath = \App\Models\SystemSetting::get('logo_path');
+    @endphp
+    @if($logoPath && Storage::disk('public')->exists($logoPath))
+        <link rel="icon" href="{{ asset('storage/' . $logoPath) }}" type="image/png">
+    @else
+        <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+    @endif
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,9 +48,7 @@
         <header class="h-20 w-full bg-slate-900/50 backdrop-blur-xl border-b border-slate-800 sticky top-0 z-50">
             <div class="max-w-7xl mx-auto h-full w-full flex items-center justify-between px-6 lg:px-10">
                 <a href="{{ route('home') }}" class="flex items-center gap-3 transition-all hover:scale-[1.02] group">
-                    <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-xl shadow-indigo-900/40 group-hover:rotate-3 transition-transform">
-                        <i data-lucide="building-2" class="h-6 w-6"></i>
-                    </div>
+                    <x-barangay-logo size="lg" class="ring-1 ring-white/10" />
                     <div class="flex flex-col">
                         <span class="font-black text-white tracking-tight leading-none text-xl">{{ \App\Models\SystemSetting::get('barangay_name', 'Barangay Connect') }}</span>
                         <span class="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] mt-1.5">Official e-Services</span>
