@@ -20,6 +20,17 @@
         </div>
     </x-card>
 
+    <div class="flex justify-end">
+        <x-list-sort
+            default="deleted_at"
+            defaultDirection="desc"
+            :options="[
+                'deleted_at' => 'Date deleted',
+                'name' => 'Record name',
+            ]"
+        />
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         @foreach($trash as $type => $records)
             <x-table-wrapper :title="ucwords(str_replace('_', ' ', $type))" icon="trash-2">

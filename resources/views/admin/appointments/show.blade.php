@@ -1,9 +1,122 @@
 @extends('layouts.app')
-@section('title', $appointment->appointment_number)
+
+@section('title', 'Appointment #' . $appointment->appointment_number)
+
+@section('breadcrumb')
+    <a href="{{ route('admin.appointments.index') }}" class="text-slate-500 hover:text-indigo-400 transition-colors">Appointments</a>
+    <i data-lucide="chevron-right" class="h-3 w-3 text-slate-700"></i>
+    <span class="text-slate-300">Details</span>
+@endsection
+
 @section('content')
-<h1 class="h4">{{ $appointment->appointment_number }}</h1>
-<p>{{ $appointment->appointment_date->format('l, M d, Y') }} at {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('g:i A') }}</p>
-<p>Resident: {{ $appointment->resident->full_name }}</p>
-<p>Status: {{ $appointment->status }}</p>
-<a href="{{ route('admin.appointments.edit',$appointment) }}" class="btn btn-sm btn-primary">Edit</a>
+@php
+    $statusType = match($appointment->status) {
+        'scheduled' => 'info',
+        'confirmed' => 'success',
+        'rescheduled' => 'warning',
+        'cancelled', 'rejected', 'no_show' => 'danger',
+        'completed' => 'primary',
+        default => 'neutral',
+    };
+@endphp
+
+<div class="w-full max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+            <a href="{{ route('admin.appointments.index') }}" class="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 transition-all">
+                <i data-lucide="arrow-left" class="h-5 w-5"></i>
+            </a>
+            <div>
+                <h1 class="text-2xl font-black text-white tracking-tight">Appointment Details</h1>
+                <p class="text-sm text-slate-500 font-medium mt-1 font-mono text-indigo-400/90">#{{ $appointment->appointment_number }}</p>
+            </div>
+        </div>
+        <x-badge :type="$statusType" class="px-4 py-2 text-[10px]">{{ str_replace('_', ' ', $appointment->status) }}</x-badge>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 space-y-8">
+            <x-card title="Schedule Information" class="bg-slate-900/50 border-slate-800">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="flex items-center gap-4">
+                        <div class="h-12 w-12 rounded-2xl bg-indigo-500/10 flex flex-col items-center justify-center text-indigo-400 border border-indigo-500/20">
+                            <span class="text-[10px] font-black uppercase tracking-tighter leading-none">{{ $appointment->appointment_date->format('M') }}</span>
+                            <span class="text-lg font-black mt-1 leading-none">{{ $appointment->appointment_date->format('d') }}</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Scheduled Date</span>
+                            <p class="text-sm font-black text-white">{{ $appointment->appointment_date->format('l, F d, Y') }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="h-12 w-12 rounded-2xl bg-slate-800 flex items-center justify-center text-slate-400 border border-slate-700">
+                            <i data-lucide="clock" class="h-6 w-6"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Arrival Time</span>
+                            <p class="text-sm font-black text-white">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('g:i A') }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                @if($appointment->notes)
+                    <div class="h-px bg-slate-800 my-8"></div>
+                    <div class="space-y-2">
+                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Notes</span>
+                        <div class="bg-slate-950/50 border border-slate-800 rounded-2xl p-6 text-sm text-slate-300 leading-relaxed">
+                            {{ $appointment->notes }}
+                        </div>
+                    </div>
+                @endif
+            </x-card>
+
+            @if($appointment->documentRequest)
+                <x-card title="Linked Document Request" class="bg-slate-900/50 border-slate-800">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <p class="text-sm font-black text-white">{{ $appointment->documentRequest->documentType->name }}</p>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase mt-1 font-mono">{{ $appointment->documentRequest->request_number }}</p>
+                        </div>
+                        <x-button href="{{ route('admin.requests.show', $appointment->documentRequest) }}" variant="secondary" size="sm" icon="external-link">
+                            View Request
+                        </x-button>
+                    </div>
+                </x-card>
+            @endif
+        </div>
+
+        <div class="lg:col-span-4 space-y-8">
+            <x-card title="Resident" class="bg-slate-900/50 border-slate-800">
+                <div class="flex flex-col items-center text-center">
+                    <div class="h-16 w-16 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500 mb-4">
+                        <i data-lucide="user" class="h-8 w-8"></i>
+                    </div>
+                    <h3 class="text-sm font-black text-white">{{ $appointment->resident->full_name }}</h3>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase mt-1">{{ $appointment->resident->contact_number ?: 'No contact number' }}</p>
+                </div>
+            </x-card>
+
+            @if($appointment->managedBy)
+                <x-card title="Managed By" class="bg-slate-900/50 border-slate-800">
+                    <p class="text-sm font-bold text-white">{{ $appointment->managedBy->name }}</p>
+                    <p class="text-[10px] text-slate-500 font-medium mt-1">{{ $appointment->managedBy->email }}</p>
+                </x-card>
+            @endif
+
+            <x-card title="Quick Links" class="bg-slate-900 border-slate-800 shadow-2xl">
+                <div class="space-y-3">
+                    <x-button href="{{ route('admin.appointments.calendar') }}" variant="secondary" size="md" icon="calendar" class="w-full">
+                        Calendar View
+                    </x-button>
+                    <x-button href="{{ route('admin.appointments.slots') }}" variant="primary" size="md" icon="clock" class="w-full shadow-indigo-600/20">
+                        Manage Schedules
+                    </x-button>
+                    <x-button href="{{ route('admin.appointments.index') }}" variant="ghost" size="md" icon="list" class="w-full">
+                        All Appointments
+                    </x-button>
+                </div>
+            </x-card>
+        </div>
+    </div>
+</div>
 @endsection

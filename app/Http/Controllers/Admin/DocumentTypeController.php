@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Concerns\SortsQueries;
 use App\Models\DocumentType;
+use App\Support\ListSorts;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -11,6 +13,8 @@ use Illuminate\Validation\Rule;
 
 class DocumentTypeController extends Controller
 {
+    use SortsQueries;
+
     public function index(Request $request)
     {
         $query = DocumentType::query();
@@ -20,7 +24,8 @@ class DocumentTypeController extends Controller
                 $q->where('name', 'like', "%{$s}%")->orWhere('slug', 'like', "%{$s}%");
             });
         }
-        $documentTypes = $query->orderBy('name')->paginate(15)->withQueryString();
+        $this->applyListSort($query, $request, ListSorts::documentTypes(), 'name', 'asc');
+        $documentTypes = $query->paginate(15)->withQueryString();
 
         return view('admin.document-types.index', compact('documentTypes'));
     }

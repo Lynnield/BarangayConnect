@@ -24,14 +24,15 @@
         <div class="flex items-center gap-3">
             @php
                 $statusType = match($appointment->status) {
+                    'scheduled' => 'info',
                     'confirmed' => 'success',
-                    'pending' => 'warning',
-                    'cancelled' => 'danger',
+                    'rescheduled' => 'warning',
+                    'cancelled', 'rejected', 'no_show' => 'danger',
                     'completed' => 'primary',
                     default => 'neutral',
                 };
             @endphp
-            <x-badge :type="$statusType" class="px-4 py-2 text-[10px]">{{ $appointment->status }}</x-badge>
+            <x-badge :type="$statusType" class="px-4 py-2 text-[10px]">{{ str_replace('_', ' ', $appointment->status) }}</x-badge>
         </div>
     </div>
 
@@ -61,12 +62,12 @@
                     </div>
                 </div>
 
-                @if($appointment->reason)
+                @if($appointment->notes)
                     <div class="h-px bg-slate-800 my-8"></div>
                     <div class="space-y-2">
-                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Appointment Purpose</span>
-                        <div class="bg-slate-950/50 border border-slate-800 rounded-2xl p-6 text-sm text-slate-300 leading-relaxed italic">
-                            "{{ $appointment->reason }}"
+                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Notes</span>
+                        <div class="bg-slate-950/50 border border-slate-800 rounded-2xl p-6 text-sm text-slate-300 leading-relaxed">
+                            {{ $appointment->notes }}
                         </div>
                     </div>
                 @endif
@@ -91,7 +92,7 @@
         <div class="lg:col-span-4 space-y-8">
             <x-card title="Workflow Actions" icon="refresh-cw" class="bg-slate-900 border-slate-800 shadow-2xl">
                 <div class="space-y-4">
-                    @if($appointment->status === 'pending')
+                    @if(in_array($appointment->status, ['scheduled', 'rescheduled'], true))
                         <form method="POST" action="{{ route('staff.appointments.confirm', $appointment) }}">
                             @csrf
                             <x-button type="submit" variant="primary" size="lg" icon="check-circle" class="w-full shadow-indigo-600/20">
@@ -101,7 +102,7 @@
                     @endif
 
                     @if($appointment->status !== 'cancelled' && $appointment->status !== 'completed')
-                        <form method="POST" action="{{ route('staff.appointments.cancel', $appointment) }}" onsubmit="return confirm('Cancel this appointment?')">
+                        <form method="POST" action="{{ route('staff.appointments.destroy', $appointment) }}" onsubmit="return confirm('Cancel this appointment?')">
                             @csrf
                             @method('DELETE')
                             <x-button type="submit" variant="ghost" size="lg" icon="x-circle" class="w-full text-rose-500 hover:bg-rose-500/5">

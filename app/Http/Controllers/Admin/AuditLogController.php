@@ -3,15 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Concerns\SortsQueries;
 use App\Models\AuditLog;
+use App\Support\ListSorts;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AuditLogController extends Controller
 {
+    use SortsQueries;
+
     public function index(Request $request)
     {
-        $query = AuditLog::with('user')->orderByDesc('created_at');
+        $query = AuditLog::with('user');
 
         if ($request->filled('search')) {
             $s = $request->search;
@@ -31,6 +35,7 @@ class AuditLogController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
+        $this->applyListSort($query, $request, ListSorts::auditLogs(), 'created_at', 'desc');
         $logs = $query->paginate(40)->withQueryString();
         $modules = AuditLog::query()->select('module')->distinct()->pluck('module');
 

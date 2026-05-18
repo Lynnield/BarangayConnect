@@ -3,15 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Concerns\SortsQueries;
 use App\Models\{Permission, Role};
+use App\Support\ListSorts;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
-    public function index()
+    use SortsQueries;
+
+    public function index(Request $request)
     {
-        $roles = Role::withCount('users')->with('permissions')->paginate(15);
+        $query = Role::withCount('users')->with('permissions');
+        $this->applyListSort($query, $request, ListSorts::roles(), 'name', 'asc');
+        $roles = $query->paginate(15)->withQueryString();
 
         return view('admin.roles.index', compact('roles'));
     }

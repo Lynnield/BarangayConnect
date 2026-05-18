@@ -53,7 +53,13 @@
 
     <!-- Search & Filters -->
     <x-card class="bg-slate-900/50 border-slate-800" :padding="false">
-        <form method="GET" action="{{ route('admin.residents.index') }}" class="p-6 grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+        @php
+            $filtersActive = request()->filled('search')
+                || request()->filled('gender')
+                || request()->has('sort')
+                || request()->has('direction');
+        @endphp
+        <form method="GET" action="{{ route('admin.residents.index') }}" class="p-6 grid grid-cols-1 md:grid-cols-5 gap-6 items-end">
             <div class="md:col-span-2">
                 <label class="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3 ml-1">Search Directory</label>
                 <div class="relative group">
@@ -79,11 +85,23 @@
                     </div>
                 </div>
             </div>
-            <div class="flex gap-3">
-                <x-button type="submit" variant="secondary" size="md" class="flex-1" icon="filter">Filter</x-button>
-                @if(request()->anyFilled(['search', 'gender']))
-                    <x-button type="button" variant="ghost" size="md" onclick="window.location.href='{{ route('admin.residents.index') }}'" icon="rotate-ccw"></x-button>
-                @endif
+            <div>
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3 ml-1">Sort</label>
+                <x-list-sort
+                    inline
+                    default="full_name"
+                    defaultDirection="asc"
+                    :options="[
+                        'full_name' => 'Full name',
+                        'resident_number' => 'Resident ID',
+                        'gender' => 'Gender',
+                        'created_at' => 'Date registered',
+                    ]"
+                />
+            </div>
+            <div class="flex items-end gap-3 flex-nowrap">
+                <x-button type="submit" variant="secondary" size="md" class="flex-1 min-w-0" icon="filter">Filter</x-button>
+                <x-filter-reset :route="route('admin.residents.index')" :active="$filtersActive" />
             </div>
         </form>
     </x-card>

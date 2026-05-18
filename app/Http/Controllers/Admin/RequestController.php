@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Concerns\SortsQueries;
 use App\Models\{DocumentRequest, DocumentType};
+use App\Support\ListSorts;
 use Illuminate\Http\Request;
 
 class RequestController extends Controller
 {
+    use SortsQueries;
+
     public function index(Request $request)
     {
         $query = DocumentRequest::with(['resident', 'documentType']);
@@ -26,7 +30,8 @@ class RequestController extends Controller
             $query->where('document_type_id', $request->document_type);
         }
 
-        $requests = $query->latest()->paginate(25)->withQueryString();
+        $this->applyListSort($query, $request, ListSorts::documentRequests(), 'created_at', 'desc');
+        $requests = $query->paginate(25)->withQueryString();
         $documentTypes = DocumentType::orderBy('name')->get();
 
         return view('admin.requests.index', compact('requests', 'documentTypes'));

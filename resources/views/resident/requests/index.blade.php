@@ -5,15 +5,22 @@
 @endsection
 @section('content')
 <div class="w-full space-y-8 animate-in fade-in duration-700">
+    @php $resident = auth()->user()->resident; @endphp
     <x-card class="border-none shadow-2xl bg-gradient-to-r from-indigo-900 via-slate-900 to-slate-900" :padding="false">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between p-8 gap-6">
             <div>
                 <h1 class="text-3xl font-black text-white tracking-tight">Document Requests</h1>
                 <p class="text-sm text-slate-400 mt-2 font-medium">Track and manage your official document applications.</p>
             </div>
-            <x-button href="{{ route('resident.requests.create') }}" variant="primary" size="md" icon="plus" class="shadow-indigo-600/20">
-                New Request
-            </x-button>
+            @if($resident?->isVerified)
+                <x-button href="{{ route('resident.requests.create') }}" variant="primary" size="md" icon="plus" class="shadow-indigo-600/20">
+                    New Request
+                </x-button>
+            @else
+                <div class="rounded-3xl border border-yellow-500/20 bg-yellow-500/5 px-5 py-4 text-sm font-semibold text-yellow-200 max-w-md">
+                    Only verified residents may submit document requests. Please wait for verification or contact the barangay office.
+                </div>
+            @endif
         </div>
     </x-card>
 
@@ -71,9 +78,15 @@
                                     <h3 class="text-lg font-black text-white">No Records Found</h3>
                                     <p class="text-sm text-slate-500 max-w-xs mx-auto mt-1 font-medium italic">You haven't submitted any document requests yet.</p>
                                 </div>
-                                <x-button href="{{ route('resident.requests.create') }}" variant="outline" size="sm" icon="plus-circle">
-                                    Start First Request
-                                </x-button>
+                                @if($resident?->isVerified)
+                                    <x-button href="{{ route('resident.requests.create') }}" variant="outline" size="sm" icon="plus-circle">
+                                        Start First Request
+                                    </x-button>
+                                @else
+                                    <div class="rounded-3xl border border-yellow-500/20 bg-yellow-500/5 px-5 py-4 text-sm font-semibold text-yellow-200 max-w-md">
+                                        Document requests are available only to verified residents.
+                                    </div>
+                                @endif
                             </div>
                         </td>
                     </tr>

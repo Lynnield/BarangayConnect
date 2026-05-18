@@ -27,7 +27,15 @@
     <div class="col-md-4"><label class="form-label">Contact</label><input name="contact_number" class="form-control"></div>
     <div class="col-md-4"><label class="form-label">Email</label><input type="email" name="email" class="form-control"></div>
     <div class="col-md-4"><label class="form-label">Occupation</label><input name="occupation" class="form-control"></div>
-    <div class="col-md-6"><label class="form-label">Valid ID type</label><input name="valid_id_type" class="form-control"></div>
+    <div class="col-md-6">
+        <label class="form-label">Valid ID type</label>
+        <select name="valid_id_type" class="form-select">
+            <option value="">Select ID type</option>
+            @foreach(\App\Models\Resident::VALID_ID_TYPES as $type)
+                <option value="{{ $type }}" @selected(old('valid_id_type') === $type)>{{ $type }}</option>
+            @endforeach
+        </select>
+    </div>
     <div class="col-md-6"><label class="form-label">Valid ID number</label><input name="valid_id_number" class="form-control"></div>
 </div>
 <button class="btn btn-primary mt-3">Save</button>

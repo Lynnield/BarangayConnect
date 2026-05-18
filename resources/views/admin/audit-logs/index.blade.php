@@ -58,11 +58,25 @@
                         class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-3 text-[10px] text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none shadow-inner">
                 </div>
             </div>
-            <div class="flex gap-3">
-                <x-button type="submit" variant="secondary" size="md" class="flex-1" icon="filter">Filter</x-button>
-                @if(request()->anyFilled(['search', 'module', 'date_from', 'date_to']))
-                    <x-button type="button" variant="ghost" size="md" onclick="window.location.href='{{ route('admin.audit-logs.index') }}'" icon="rotate-ccw"></x-button>
-                @endif
+            @php
+                $filtersActive = request()->anyFilled(['search', 'module', 'date_from', 'date_to'])
+                    || request()->has('sort')
+                    || request()->has('direction');
+            @endphp
+            <div class="flex items-end gap-3 flex-nowrap">
+                <x-list-sort
+                    inline
+                    class="min-w-0 flex-1"
+                    default="created_at"
+                    defaultDirection="desc"
+                    :options="[
+                        'created_at' => 'Timestamp',
+                        'module' => 'Module',
+                        'action' => 'Action',
+                    ]"
+                />
+                <x-button type="submit" variant="secondary" size="md" class="shrink-0" icon="filter">Filter</x-button>
+                <x-filter-reset :route="route('admin.audit-logs.index')" :active="$filtersActive" />
             </div>
         </form>
     </x-card>

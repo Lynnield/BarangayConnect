@@ -23,6 +23,17 @@
 
     <!-- Table Section -->
     <x-table-wrapper title="Service Catalog" icon="file-text">
+        <x-slot:action>
+            <x-list-sort
+                default="name"
+                defaultDirection="asc"
+                :options="[
+                    'name' => 'Service name',
+                    'fee' => 'Processing fee',
+                    'processing_days' => 'Turnaround days',
+                ]"
+            />
+        </x-slot:action>
         <table class="w-full text-left">
             <thead>
                 <tr class="bg-slate-900/50 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">

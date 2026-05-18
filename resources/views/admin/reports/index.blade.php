@@ -115,6 +115,18 @@
             @endif
 
             <x-table-wrapper title="Recent Exports" icon="history">
+                <x-slot:action>
+                    <x-list-sort
+                        default="created_at"
+                        defaultDirection="desc"
+                        :options="[
+                            'created_at' => 'Date generated',
+                            'report_name' => 'Report name',
+                            'report_type' => 'Report type',
+                            'status' => 'Status',
+                        ]"
+                    />
+                </x-slot:action>
                 <div class="divide-y divide-slate-800/50">
                     @forelse($recent as $rep)
                         <div class="p-4 hover:bg-slate-800/30 transition-all group">

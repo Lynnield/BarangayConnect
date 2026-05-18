@@ -32,6 +32,18 @@
 
     <!-- Table Section -->
     <x-table-wrapper title="Backup Archives" icon="archive">
+        <x-slot:action>
+            <x-list-sort
+                default="created_at"
+                defaultDirection="desc"
+                :options="[
+                    'created_at' => 'Date created',
+                    'backup_name' => 'Backup name',
+                    'file_size' => 'File size',
+                    'status' => 'Status',
+                ]"
+            />
+        </x-slot:action>
         <table class="w-full text-left">
             <thead>
                 <tr class="bg-slate-900/50 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">

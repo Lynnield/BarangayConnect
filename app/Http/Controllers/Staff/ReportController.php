@@ -3,16 +3,22 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
+use App\Http\Concerns\SortsQueries;
 use App\Models\{DocumentRequest, Report};
+use App\Support\ListSorts;
 use App\Services\AuditService;
 use App\Services\PdfService;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    public function index()
+    use SortsQueries;
+
+    public function index(Request $request)
     {
-        $recent = Report::with('generatedByUser')->where('generated_by', auth()->id())->latest()->limit(15)->get();
+        $recentQuery = Report::with('generatedByUser')->where('generated_by', auth()->id());
+        $this->applyListSort($recentQuery, $request, ListSorts::reports(), 'created_at', 'desc');
+        $recent = $recentQuery->limit(15)->get();
 
         return view('staff.reports.index', compact('recent'));
     }

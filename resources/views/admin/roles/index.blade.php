@@ -23,6 +23,17 @@
 
     <!-- Roles Table -->
     <x-table-wrapper title="System Roles" icon="shield-check">
+        <x-slot:action>
+            <x-list-sort
+                default="name"
+                defaultDirection="asc"
+                :options="[
+                    'name' => 'Role name',
+                    'users' => 'User count',
+                    'created_at' => 'Date created',
+                ]"
+            />
+        </x-slot:action>
         <table class="w-full text-left">
             <thead>
                 <tr class="bg-slate-900/50 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">

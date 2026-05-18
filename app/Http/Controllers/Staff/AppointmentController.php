@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
+use App\Http\Concerns\SortsQueries;
 use App\Models\{Appointment, Resident};
+use App\Support\ListSorts;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
+    use SortsQueries;
+
     public function index(Request $request)
     {
         $query = Appointment::with(['resident', 'documentRequest']);
@@ -20,7 +24,8 @@ class AppointmentController extends Controller
             $query->where('status', $request->status);
         }
 
-        $appointments = $query->orderBy('appointment_date')->orderBy('appointment_time')->paginate(25)->withQueryString();
+        $this->applyListSort($query, $request, ListSorts::appointments(), 'appointment_date', 'asc');
+        $appointments = $query->paginate(25)->withQueryString();
 
         return view('staff.appointments.index', compact('appointments'));
     }

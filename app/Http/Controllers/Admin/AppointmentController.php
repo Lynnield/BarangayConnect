@@ -3,15 +3,31 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Concerns\SortsQueries;
 use App\Models\{Appointment, AppointmentSlot, Resident};
+use App\Support\ListSorts;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
+    use SortsQueries;
+
     public function index(Request $request)
     {
-        return redirect()->route('admin.appointments.slots');
+        $query = Appointment::with('resident');
+
+        if ($request->filled('date_from')) {
+            $query->where('appointment_date', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->where('appointment_date', '<=', $request->date_to);
+        }
+
+        $appointments = $query->orderBy('appointment_date', 'desc')->paginate(15)->withQueryString();
+
+        return view('admin.appointments.index', compact('appointments'));
     }
 
     public function create()
@@ -75,9 +91,11 @@ class AppointmentController extends Controller
         return view('admin.appointments.calendar', compact('items', 'month', 'start', 'end'));
     }
 
-    public function slots()
+    public function slots(Request $request)
     {
-        $slots = AppointmentSlot::orderBy('slot_date')->orderBy('slot_time')->paginate(50);
+        $query = AppointmentSlot::query();
+        $this->applyListSort($query, $request, ListSorts::appointmentSlots(), 'slot_date', 'asc');
+        $slots = $query->paginate(50)->withQueryString();
 
         return view('admin.appointments.slots', compact('slots'));
     }

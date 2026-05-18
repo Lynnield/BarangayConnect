@@ -79,12 +79,23 @@
         <div class="xl:col-span-8">
             <x-card class="bg-slate-900/50 border-slate-800" :padding="false">
                 <div class="p-6 space-y-6">
-                    <div class="flex items-center gap-3 justify-between">
+                    <div class="flex flex-wrap items-center gap-3 justify-between">
                         <div>
                             <h2 class="text-sm font-black uppercase tracking-[0.2em] text-white">Existing Slots</h2>
                             <p class="text-xs text-slate-500">Review available appointment blocks and current capacity.</p>
                         </div>
-                        <span class="rounded-full bg-slate-800 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{{ $slots->total() }} slots</span>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <x-list-sort
+                                default="slot_date"
+                                defaultDirection="asc"
+                                :options="[
+                                    'slot_date' => 'Date',
+                                    'slot_time' => 'Time',
+                                    'max_appointments' => 'Capacity',
+                                ]"
+                            />
+                            <span class="rounded-full bg-slate-800 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{{ $slots->total() }} slots</span>
+                        </div>
                     </div>
 
                     <div class="overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/40">

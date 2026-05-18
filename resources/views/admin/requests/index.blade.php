@@ -76,11 +76,27 @@
                 </div>
             </div>
 
-            <div class="flex gap-3">
-                <x-button type="submit" variant="secondary" size="md" class="flex-1" icon="filter">Filter</x-button>
-                @if(request()->anyFilled(['search', 'status', 'document_type', 'date_from', 'date_to']))
-                    <x-button type="button" variant="ghost" size="md" onclick="window.location.href='{{ route('admin.requests.index') }}'" icon="rotate-ccw"></x-button>
-                @endif
+            @php
+                $filtersActive = request()->anyFilled(['search', 'status', 'document_type', 'date_from', 'date_to'])
+                    || request()->has('sort')
+                    || request()->has('direction');
+            @endphp
+            <div class="flex items-end gap-3 flex-nowrap md:col-span-2">
+                <x-list-sort
+                    inline
+                    class="min-w-0 flex-1"
+                    default="created_at"
+                    defaultDirection="desc"
+                    :options="[
+                        'created_at' => 'Date submitted',
+                        'request_number' => 'Request #',
+                        'status' => 'Status',
+                        'resident' => 'Resident name',
+                        'type' => 'Document type',
+                    ]"
+                />
+                <x-button type="submit" variant="secondary" size="md" class="shrink-0" icon="filter">Filter</x-button>
+                <x-filter-reset :route="route('admin.requests.index')" :active="$filtersActive" />
             </div>
         </form>
     </x-card>

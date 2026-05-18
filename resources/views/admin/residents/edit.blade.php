@@ -125,7 +125,12 @@
                 </div>
                 <div class="space-y-3">
                     <label class="text-[10px] font-black uppercase tracking-widest text-slate-500">Valid ID type</label>
-                    <input name="valid_id_type" class="w-full rounded-3xl border border-slate-700 bg-slate-950/60 px-4 py-3 text-sm text-white outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10" value="{{ old('valid_id_type',$resident->valid_id_type) }}">
+                    <select name="valid_id_type" class="w-full rounded-3xl border border-slate-700 bg-slate-950/60 px-4 py-3 text-sm text-white outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10">
+                        <option value="">Select ID type</option>
+                        @foreach(\App\Models\Resident::VALID_ID_TYPES as $type)
+                            <option value="{{ $type }}" @selected(old('valid_id_type', $resident->valid_id_type) === $type)>{{ $type }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="space-y-3">
                     <label class="text-[10px] font-black uppercase tracking-widest text-slate-500">Valid ID number</label>

@@ -25,6 +25,19 @@
 
     <!-- Table Section -->
     <x-table-wrapper title="Scheduled Visits" icon="calendar-check">
+        <x-slot:action>
+            <x-list-sort
+                default="appointment_date"
+                defaultDirection="asc"
+                :options="[
+                    'appointment_date' => 'Appointment date',
+                    'appointment_time' => 'Time',
+                    'status' => 'Status',
+                    'resident' => 'Resident name',
+                    'created_at' => 'Date booked',
+                ]"
+            />
+        </x-slot:action>
         <table class="w-full text-left">
             <thead>
                 <tr class="bg-slate-900/50 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">

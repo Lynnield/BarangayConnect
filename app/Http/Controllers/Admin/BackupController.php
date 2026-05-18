@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Concerns\SortsQueries;
 use App\Models\Backup;
+use App\Support\ListSorts;
 use App\Services\AuditService;
 use App\Services\BackupService;
 use Illuminate\Http\Request;
@@ -11,9 +13,13 @@ use Illuminate\Support\Facades\File;
 
 class BackupController extends Controller
 {
-    public function index()
+    use SortsQueries;
+
+    public function index(Request $request)
     {
-        $backups = Backup::with('generatedBy')->latest()->paginate(20);
+        $query = Backup::with('generatedBy');
+        $this->applyListSort($query, $request, ListSorts::backups(), 'created_at', 'desc');
+        $backups = $query->paginate(20)->withQueryString();
 
         return view('admin.backups.index', compact('backups'));
     }

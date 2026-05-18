@@ -3,16 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Concerns\SortsQueries;
 use App\Models\{DocumentRequest, Report, Resident, SystemSetting};
+use App\Support\ListSorts;
 use App\Services\AuditService;
 use App\Services\PdfService;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    public function index()
+    use SortsQueries;
+
+    public function index(Request $request)
     {
-        $recent = Report::with('generatedByUser')->latest()->limit(20)->get();
+        $recentQuery = Report::with('generatedByUser');
+        $this->applyListSort($recentQuery, $request, ListSorts::reports(), 'created_at', 'desc');
+        $recent = $recentQuery->limit(20)->get();
         $favorites = json_decode((string) SystemSetting::get('favorite_report_configs', '[]'), true) ?: [];
 
         return view('admin.reports.index', compact('recent', 'favorites'));

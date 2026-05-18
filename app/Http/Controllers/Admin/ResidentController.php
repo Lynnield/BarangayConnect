@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Concerns\SortsQueries;
 use App\Models\Resident;
+use App\Support\ListSorts;
 use App\Services\AuditService;
 use App\Services\ResidentExportService;
 use App\Services\ResidentImportService;
@@ -11,6 +13,8 @@ use Illuminate\Http\Request;
 
 class ResidentController extends Controller
 {
+    use SortsQueries;
+
     public function index(Request $request)
     {
         $query = Resident::with('user');
@@ -32,7 +36,8 @@ class ResidentController extends Controller
             $query->where('gender', $request->gender);
         }
 
-        $residents = $query->latest()->paginate(20)->withQueryString();
+        $this->applyListSort($query, $request, ListSorts::residents(), 'full_name', 'asc');
+        $residents = $query->paginate(20)->withQueryString();
 
         return view('admin.residents.index', compact('residents'));
     }

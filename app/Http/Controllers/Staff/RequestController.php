@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
+use App\Http\Concerns\SortsQueries;
 use App\Models\{DocumentRequest, DocumentType, Resident, RequestStatusLog, ActivityFeed};
+use App\Support\ListSorts;
 use App\Notifications\RequestStatusNotification;
 use App\Services\{AuditService, PdfService};
 use Illuminate\Http\Request;
 
 class RequestController extends Controller
 {
+    use SortsQueries;
+
     public function index(Request $request)
     {
         $query = DocumentRequest::with(['resident', 'documentType', 'processedBy']);
@@ -37,7 +41,8 @@ class RequestController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        $requests = $query->latest()->paginate(20)->withQueryString();
+        $this->applyListSort($query, $request, ListSorts::documentRequests(), 'created_at', 'desc');
+        $requests = $query->paginate(20)->withQueryString();
         $documentTypes = DocumentType::where('is_active', true)->get();
         $statusCounts = DocumentRequest::selectRaw('status, COUNT(*) as count')
             ->groupBy('status')->pluck('count', 'status');

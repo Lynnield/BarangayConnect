@@ -71,13 +71,30 @@
                             <h2 class="text-xs font-black text-white uppercase tracking-[0.2em]">Community Record</h2>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="md:col-span-2 space-y-2">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Full Legal Name</label>
-                                <input name="full_name" type="text" value="{{ old('full_name', $resident?->full_name) }}" required
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">First Name</label>
+                                <input name="first_name" type="text" value="{{ old('first_name', $resident?->first_name) }}" required
                                     class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none">
                             </div>
-                            
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Middle Name</label>
+                                <input name="middle_name" type="text" value="{{ old('middle_name', $resident?->middle_name) }}"
+                                    class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Last Name</label>
+                                <input name="last_name" type="text" value="{{ old('last_name', $resident?->last_name) }}" required
+                                    class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Suffix</label>
+                                <input name="suffix" type="text" value="{{ old('suffix', $resident?->suffix) }}"
+                                    class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Gender Identity</label>
                                 <div class="relative">
@@ -92,13 +109,14 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="space-y-2">
                                 <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Date of Birth</label>
                                 <input type="date" name="birthdate" value="{{ old('birthdate', $resident?->birthdate?->format('Y-m-d')) }}" required
                                     class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none">
                             </div>
+                        </div>
 
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Civil Status</label>
                                 <div class="relative">
@@ -113,32 +131,96 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="space-y-2">
                                 <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Occupation</label>
                                 <input name="occupation" type="text" value="{{ old('occupation', $resident?->occupation) }}"
                                     class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none">
                             </div>
+                        </div>
 
-                            <div class="md:col-span-2 space-y-2">
-                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Barangay Residence Address</label>
-                                <textarea name="res_address" rows="2" required
-                                    class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none resize-none">{{ old('res_address', $resident?->address) }}</textarea>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">House Number</label>
+                                <input name="house_number" type="text" value="{{ old('house_number', $resident?->house_number) }}"
+                                    class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none">
                             </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Street</label>
+                                <input name="street" type="text" value="{{ old('street', $resident?->street) }}"
+                                    class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Purok</label>
+                                <input name="purok" type="text" value="{{ old('purok', $resident?->purok) }}"
+                                    class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Barangay</label>
+                                <input name="barangay" type="text" value="{{ old('barangay', $resident?->barangay) }}"
+                                    class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none">
+                            </div>
+                        </div>
 
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">City</label>
+                                <input name="city" type="text" value="{{ old('city', $resident?->city) }}"
+                                    class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Province</label>
+                                <input name="province" type="text" value="{{ old('province', $resident?->province) }}"
+                                    class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Postal Code</label>
+                                <input name="postal_code" type="text" value="{{ old('postal_code', $resident?->postal_code) }}"
+                                    class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Valid ID Type</label>
-                                <input name="valid_id_type" type="text" value="{{ old('valid_id_type', $resident?->valid_id_type) }}"
-                                    class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
-                                    placeholder="e.g. PhilID, Passport">
+                                <div class="relative">
+                                    <select name="valid_id_type"
+                                        class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none appearance-none">
+                                        <option value="">Select ID type</option>
+                                        @foreach(\App\Models\Resident::VALID_ID_TYPES as $type)
+                                            <option value="{{ $type }}" @selected(old('valid_id_type', $resident?->valid_id_type) === $type)>{{ $type }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-600">
+                                        <i data-lucide="chevron-down" class="h-4 w-4"></i>
+                                    </div>
+                                </div>
                             </div>
-
                             <div class="space-y-2">
                                 <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">ID Serial Number</label>
                                 <input name="valid_id_number" type="text" value="{{ old('valid_id_number', $resident?->valid_id_number) }}"
                                     class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
                                     placeholder="Enter serial number">
                             </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Contact Number</label>
+                                <input name="contact_number" type="text" value="{{ old('contact_number', $resident?->contact_number) }}"
+                                    class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                                    placeholder="0912 345 6789">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Email</label>
+                                <input name="email" type="email" value="{{ old('email', $user->email) }}"
+                                    class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none">
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 space-y-2">
+                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Barangay Residence Address</label>
+                            <textarea name="res_address" rows="2" required
+                                class="block w-full rounded-2xl border border-slate-700 bg-slate-800/50 py-3 px-4 text-xs text-white focus:border-indigo-500 focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none resize-none">{{ old('res_address', $resident?->address) }}</textarea>
                         </div>
                     </div>
 

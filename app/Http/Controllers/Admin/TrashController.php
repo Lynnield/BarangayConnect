@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Concerns\SortsQueries;
 use App\Models\Appointment;
 use App\Models\DocumentRequest;
 use App\Models\DocumentType;
@@ -13,6 +14,8 @@ use Illuminate\Http\Request;
 
 class TrashController extends Controller
 {
+    use SortsQueries;
+
     private array $models = [
         'users' => User::class,
         'residents' => Resident::class,
@@ -21,13 +24,29 @@ class TrashController extends Controller
         'appointments' => Appointment::class,
     ];
 
-    public function index()
+    public function index(Request $request)
     {
-        $trash = collect($this->models)->mapWithKeys(function (string $class, string $key) {
-            return [$key => $class::onlyTrashed()->latest('deleted_at')->limit(50)->get()];
+        $trash = collect($this->models)->mapWithKeys(function (string $class, string $key) use ($request) {
+            $query = $class::onlyTrashed();
+            $this->applyListSort($query, $request, $this->trashSortOptions($key), 'deleted_at', 'desc');
+
+            return [$key => $query->limit(50)->get()];
         });
 
         return view('admin.trash.index', compact('trash'));
+    }
+
+    /** @return array<string, string> */
+    private function trashSortOptions(string $type): array
+    {
+        return match ($type) {
+            'users' => ['deleted_at' => 'deleted_at', 'name' => 'name'],
+            'residents' => ['deleted_at' => 'deleted_at', 'name' => 'full_name'],
+            'document_requests' => ['deleted_at' => 'deleted_at', 'name' => 'request_number'],
+            'document_types' => ['deleted_at' => 'deleted_at', 'name' => 'name'],
+            'appointments' => ['deleted_at' => 'deleted_at', 'name' => 'appointment_number'],
+            default => ['deleted_at' => 'deleted_at'],
+        };
     }
 
     public function restore(Request $request, string $type, int $id)

@@ -59,8 +59,19 @@
                     </div>
                 </div>
             </div>
-            <div class="flex gap-3">
-                <x-button type="submit" variant="secondary" size="md" class="flex-1" icon="filter">Filter</x-button>
+            <div class="flex flex-wrap items-end gap-3">
+                <x-list-sort
+                    inline
+                    default="name"
+                    defaultDirection="asc"
+                    :options="[
+                        'name' => 'Name',
+                        'email' => 'Email',
+                        'status' => 'Status',
+                        'created_at' => 'Date created',
+                    ]"
+                />
+                <x-button type="submit" variant="secondary" size="md" icon="filter">Filter</x-button>
                 <x-button type="button" variant="ghost" size="md" onclick="window.location.href='{{ route('admin.users.index') }}'" icon="rotate-ccw"></x-button>
             </div>
         </form>

@@ -10,6 +10,15 @@ class Resident extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public const VALID_ID_TYPES = [
+        'National ID',
+        'Passport',
+        'Driver\'s License',
+        'UMID',
+        'PRC ID',
+        'Postal ID',
+    ];
+
     protected $fillable = [
         'user_id', 'resident_number', 'full_name', 'first_name', 'middle_name',
         'last_name', 'suffix', 'gender', 'birthdate', 'civil_status', 'address',
@@ -43,6 +52,16 @@ class Resident extends Model
     public function verifiedBy()
     {
         return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    public function getIsVerifiedAttribute(): bool
+    {
+        return $this->verification_status === 'verified';
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
     }
 
     public function getAgeAttribute(): int

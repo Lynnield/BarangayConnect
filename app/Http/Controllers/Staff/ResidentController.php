@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
+use App\Http\Concerns\SortsQueries;
 use App\Models\Resident;
+use App\Support\ListSorts;
 use App\Notifications\ResidentVerificationNotification;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
 
 class ResidentController extends Controller
 {
+    use SortsQueries;
+
     public function index(Request $request)
     {
         $query = Resident::with('user');
@@ -25,7 +29,8 @@ class ResidentController extends Controller
             });
         }
 
-        $residents = $query->orderBy('full_name')->paginate(25)->withQueryString();
+        $this->applyListSort($query, $request, ListSorts::residents(), 'full_name', 'asc');
+        $residents = $query->paginate(25)->withQueryString();
 
         return view('staff.residents.index', compact('residents'));
     }

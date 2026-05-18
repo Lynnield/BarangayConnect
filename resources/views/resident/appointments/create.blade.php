@@ -58,14 +58,11 @@
                             required
                             class="mt-3 w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                         >
-                            @if($availableDates->isEmpty())
+                            @forelse($availableDates as $date)
+                                <option value="{{ $date }}" @selected(old('slot_date', $defaultDate) === $date)>{{ \Carbon\Carbon::parse($date)->format('M d, Y') }}</option>
+                            @empty
                                 <option value="">No available dates</option>
-                            @else
-                                <option value="">Select a date</option>
-                                @foreach($availableDates as $date)
-                                    <option value="{{ $date }}" @selected(old('slot_date', $defaultDate) === $date)>{{ \Carbon\Carbon::parse($date)->format('M d, Y') }}</option>
-                                @endforeach
-                            @endif
+                            @endforelse
                         </select>
                     </label>
 
@@ -75,12 +72,14 @@
                             name="schedule_id"
                             id="slotTime"
                             required
-                            class="mt-3 w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                            @disabled($availableDates->isEmpty())
+                            class="mt-3 w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
                         >
-                            <option value="">Choose a date first</option>
-                            @foreach($availableTimes ?? [] as $time)
-                                <option value="{{ $time['id'] }}" @selected(old('schedule_id') == $time['id'])>{{ \Carbon\createFromFormat('H:i', $time['time'])->format('g:i A') }}</option>
-                            @endforeach
+                            @forelse($availableTimes ?? [] as $time)
+                                <option value="{{ $time['id'] }}" @selected(old('schedule_id') == $time['id'])>{{ $time['time'] }}</option>
+                            @empty
+                                <option value="">{{ $availableDates->isEmpty() ? 'No dates available' : 'No times for this date' }}</option>
+                            @endforelse
                         </select>
                     </label>
                 </div>
@@ -135,47 +134,71 @@
 @endsection
 
 @push('scripts')
-<script>
-const slotDate = document.getElementById('slotDate');
-const slotTime = document.getElementById('slotTime');
+<script nonce="{{ $cspNonce }}">
+(function () {
+    const slotDate = document.getElementById('slotDate');
+    const slotTime = document.getElementById('slotTime');
+    const slotsUrl = @json(route('resident.appointment-slots'));
 
-const loadAvailableTimes = (selectedDate) => {
-    slotTime.innerHTML = '<option>Loading…</option>';
+    if (!slotDate || !slotTime) {
+        return;
+    }
 
-    fetch(`{{ route('resident.appointment-slots') }}?date=${selectedDate}`)
-        .then(response => response.json())
-        .then(rows => {
-            slotTime.innerHTML = '<option value="">Select a time</option>';
-            if (!rows.length) {
-                slotTime.innerHTML = '<option value="">No slots available for this date</option>';
-                return;
-            }
+    const renderTimeOptions = (rows) => {
+        slotTime.innerHTML = '';
+        slotTime.disabled = false;
 
-            let addedOptionCount = 0;
-            rows.forEach(row => {
-                if (!row.available) return;
-                const option = document.createElement('option');
-                option.value = row.id;
-                option.textContent = row.time;
-                slotTime.appendChild(option);
-                addedOptionCount += 1;
-            });
+        if (!rows.length) {
+            const empty = document.createElement('option');
+            empty.value = '';
+            empty.textContent = 'No times available for this date';
+            slotTime.appendChild(empty);
+            slotTime.disabled = true;
+            return;
+        }
 
-            if (addedOptionCount === 0) {
-                slotTime.innerHTML = '<option value="">No available times</option>';
-            }
-        })
-        .catch(() => {
-            slotTime.innerHTML = '<option value="">Unable to load slots</option>';
+        rows.forEach((row) => {
+            const option = document.createElement('option');
+            option.value = row.id;
+            option.textContent = row.time;
+            slotTime.appendChild(option);
         });
-};
+    };
 
-slotDate?.addEventListener('change', function() {
-    loadAvailableTimes(this.value);
-});
+    const loadAvailableTimes = (selectedDate) => {
+        if (!selectedDate) {
+            slotTime.innerHTML = '<option value="">Choose a date first</option>';
+            slotTime.disabled = true;
+            return;
+        }
 
-if (slotDate?.value) {
-    loadAvailableTimes(slotDate.value);
-}
+        slotTime.disabled = true;
+        slotTime.innerHTML = '<option value="">Loading…</option>';
+
+        fetch(`${slotsUrl}?date=${encodeURIComponent(selectedDate)}`, {
+            headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            credentials: 'same-origin',
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Failed to load slots');
+                }
+                return response.json();
+            })
+            .then(renderTimeOptions)
+            .catch(() => {
+                slotTime.innerHTML = '<option value="">Unable to load times</option>';
+                slotTime.disabled = true;
+            });
+    };
+
+    slotDate.addEventListener('change', function () {
+        loadAvailableTimes(this.value);
+    });
+
+    if (slotDate.value) {
+        loadAvailableTimes(slotDate.value);
+    }
+})();
 </script>
 @endpush

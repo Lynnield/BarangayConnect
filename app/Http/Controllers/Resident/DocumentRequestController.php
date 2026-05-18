@@ -37,6 +37,11 @@ class DocumentRequestController extends Controller
                 ->with('warning', 'Please complete your resident profile before requesting documents.');
         }
 
+        if (!$resident->isVerified) {
+            return redirect()->route('resident.requests.index')
+                ->with('warning', 'Only verified residents may request documents. Please wait for verification or contact the barangay office.');
+        }
+
         $documentTypes = DocumentType::where('is_active', true)->get();
         return view('resident.requests.create', compact('documentTypes', 'resident'));
     }
@@ -47,6 +52,10 @@ class DocumentRequestController extends Controller
 
         if (!$resident) {
             return back()->withErrors(['error' => 'Please complete your resident profile first.']);
+        }
+
+        if (!$resident->isVerified) {
+            return back()->with('warning', 'Only verified residents may submit document requests. Please wait for verification or contact the barangay office.');
         }
 
         $request->validate([

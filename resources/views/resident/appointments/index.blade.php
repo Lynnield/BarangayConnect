@@ -48,9 +48,10 @@
                         <td class="px-6 py-5">
                             @php
                                 $type = match($a->status) {
-                                    'pending' => 'warning',
+                                    'scheduled' => 'info',
                                     'confirmed' => 'success',
-                                    'cancelled', 'rejected' => 'danger',
+                                    'rescheduled' => 'warning',
+                                    'cancelled', 'rejected', 'no_show' => 'danger',
                                     'completed' => 'primary',
                                     default => 'neutral'
                                 };

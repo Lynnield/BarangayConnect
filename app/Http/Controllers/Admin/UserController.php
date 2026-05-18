@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Concerns\SortsQueries;
 use App\Models\{User, Role, LoginHistory};
+use App\Support\ListSorts;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -11,6 +13,8 @@ use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
+    use SortsQueries;
+
     public function index(Request $request)
     {
         $query = User::with('role');
@@ -30,7 +34,8 @@ class UserController extends Controller
             $query->where('status', $request->status);
         }
 
-        $users = $query->latest()->paginate(15)->withQueryString();
+        $this->applyListSort($query, $request, ListSorts::users(), 'name', 'asc');
+        $users = $query->paginate(15)->withQueryString();
         $roles = Role::all();
 
         return view('admin.users.index', compact('users', 'roles'));

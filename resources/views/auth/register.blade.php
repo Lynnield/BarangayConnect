@@ -15,7 +15,7 @@
         @csrf
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                <label class="block text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-3 ml-1">Full Name</label>
+                <label class="block text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-3 ml-1">Display Name</label>
                 <div class="relative group">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-600 group-focus-within:text-indigo-500 transition-colors">
                         <i data-lucide="user" class="h-4.5 w-4.5"></i>
